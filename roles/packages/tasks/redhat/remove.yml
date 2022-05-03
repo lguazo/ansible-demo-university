@@ -1,0 +1,5 @@
+- name: Remove required packages - Redhat
+  yum:
+    name: '{{ custom_packages | default([]) }}'
+    autoremove: yes
+    state: absent

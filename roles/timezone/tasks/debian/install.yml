@@ -1,0 +1,4 @@
+- name: Install NTP package - Debian
+  apt:
+    name: ntp
+    state: present

@@ -1,0 +1,12 @@
+- name: Check if SSH public key "{{ ssh_key_path }}.pub" already exists
+  stat:
+    path: '{{ ssh_key_path }}.pub'
+  register: ssh_public_key
+  become: yes
+
+- name: Read SSH public key
+  command: cat {{ ssh_key_path }}.pub
+  changed_when: false
+  register: current_ssh_public_key
+  become: yes
+  when: ssh_public_key.stat.exists

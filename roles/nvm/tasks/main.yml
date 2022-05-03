@@ -1,0 +1,4 @@
+---
+- import_tasks: '{{ nvm_action }}.yml'
+  tags:
+    - nvm

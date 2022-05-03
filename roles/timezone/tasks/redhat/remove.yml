@@ -1,0 +1,5 @@
+- name: Remove NTP package - Redhat
+  yum:
+    name: ntp
+    state: absent
+  notify: stop ntpd

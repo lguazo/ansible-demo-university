@@ -1,0 +1,10 @@
+- name: Remove SSH public key on Github
+  github_key:
+    name: "{{ ansible_facts['hostname'] }}"
+    token: '{{ github_token | mandatory }}'
+    state: absent
+
+- name: Remove SSH keypair on remote hosts
+  openssh_keypair:
+    path: '{{ ssh_key_path }}'
+    state: absent

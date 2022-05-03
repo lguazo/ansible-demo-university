@@ -1,0 +1,29 @@
+- name: Create "{{ root_group_name }}" group
+  group:
+    name: '{{ root_group_name }}'
+    state: present
+
+- name: Allow "{{ root_group_name }}" group to have passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: ^%{{ root_group_name }}
+    line: '%{{ root_group_name }} ALL=(ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Create "{{ username }}" user with sudo privileges
+  user:
+    name: '{{ username }}'
+    state: present
+    groups: '{{ root_group_name }}'
+    append: true
+    create_home: true
+    shell: /bin/bash
+
+- name: Recursively change ownership of the "{{ application_dir_base }}" directory
+  file:
+    path: '{{ application_dir_base }}'
+    state: directory
+    recurse: yes
+    owner: '{{ username }}'
+    group: '{{ username }}'

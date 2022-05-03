@@ -1,0 +1,4 @@
+- name: Remove NTP package - Debian
+  yum:
+    name: ntp
+    state: absent

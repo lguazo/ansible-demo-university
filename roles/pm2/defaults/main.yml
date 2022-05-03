@@ -1,0 +1,8 @@
+---
+pm2_action: deploy
+pm2_type: '{{ "web_app" if (applications_to_launch is not defined and ".js" not in entry_point) else "one_app" if (applications_to_launch is defined and applications_to_launch|length > 0) else "all_apps" }}'
+project_name: my-awesome-project
+log_date_format: YYYY-MM-DD HH:mm:ss
+entry_point: ecosystem.config.js
+serve_port: 4040
+show_pm2_logs: no

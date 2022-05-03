@@ -1,0 +1,39 @@
+- name: Save SSH public key of the user "{{ lookup('env', 'USER') }}" on remote hosts
+  authorized_key:
+    user: '{{ username | mandatory }}'
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  become: yes
+
+- import_tasks: search.yml
+
+- name: Create SSH keypair on remote hosts
+  openssh_keypair:
+    path: '{{ ssh_key_path }}'
+    comment: '{{ ssh_comment }}'
+    owner: '{{ username | mandatory }}'
+    group: '{{ username | mandatory }}'
+    mode: 0600
+    state: present
+    type: rsa
+  register: added_ssh_keypair
+  when: not ssh_public_key.stat.exists
+  become: yes
+
+- name: Retrieve hostname
+  command: hostname
+  register: hostname
+  changed_when: false
+  when: ansible_facts['hostname'] is not defined
+
+- name: Save/Authorize SSH public key on Github
+  github_key:
+    name: "{{ ansible_facts['hostname'] | default(hostname.stdout) }}"
+    token: '{{ github_token | mandatory }}'
+    pubkey: '{{ current_ssh_public_key.stdout | default(added_ssh_keypair.public_key) }}'
+  register: authorized_key
+  when:
+    - current_ssh_public_key.stdout is defined or added_ssh_keypair.public_key is defined
+  failed_when:
+    - authorized_key.failed
+    - not "another key with the same content is already registered" in authorized_key.msg

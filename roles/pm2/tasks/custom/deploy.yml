@@ -1,0 +1,18 @@
+---
+- name: Get all running processes
+  command: pm2 l
+  register: pm2_list
+  tags: [reload, update]
+
+- name: Deploy "{{ project_name }}" custom app
+  command: '{{ pm2_command_start }} --name {{ project_name }} --env {{ node_env }}'
+  args:
+    chdir: '{{ project_path }}'
+  when: 'project_name not in pm2_list.stdout'
+
+- name: Reload "{{ project_name }}" app
+  command: pm2 reload {{ project_name }} --update-env
+  args:
+    chdir: '{{ project_path }}'
+  when: project_name in pm2_list.stdout
+  tags: [reload, update]

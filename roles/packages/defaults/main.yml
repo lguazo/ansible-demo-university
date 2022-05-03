@@ -1,0 +1,9 @@
+---
+packages_action: install
+default_required_packages:
+  - curl
+  - nano
+  - unzip
+  - git
+  - htop
+  - python3

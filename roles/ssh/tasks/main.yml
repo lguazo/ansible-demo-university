@@ -1,0 +1,3 @@
+- import_tasks: '{{ ssh_action }}.yml'
+  tags:
+    - ssh

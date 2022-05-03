@@ -1,0 +1,5 @@
+- name: Install NTP package - Redhat
+  yum:
+    name: ntp
+    state: present
+  notify: start ntpd

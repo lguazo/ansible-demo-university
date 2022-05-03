@@ -1,0 +1,5 @@
+ssh_action: create
+ssh_comment: ecprodteam@condorlabs.io
+ssh_key_name: id_rsa
+ssh_path: /home/{{ username | mandatory }}/.ssh
+ssh_key_path: '{{ ssh_path }}/{{ ssh_key_name }}'

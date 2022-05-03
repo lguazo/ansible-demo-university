@@ -1,0 +1,13 @@
+---
+- name: Stop all running processes
+  command: pm2 stop {{entry_point }}
+  args:
+    chdir: '{{ project_path }}'
+  register: stop_applications
+  ignore_errors: yes
+
+- name: Delete all apps
+  command: pm2 delete {{ entry_point }}
+  args:
+    chdir: '{{ project_path }}'
+  when: stop_applications is succeeded

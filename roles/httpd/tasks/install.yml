@@ -1,0 +1,20 @@
+- name: Installing Latest version of Apache
+  yum: pkg=httpd state=latest
+  become: yes
+
+# - name: Copying the demo file
+#   template: src=/etc/ansible/index.html dest=/var/www/html
+#             owner=apache group=apache mode=0644
+            
+- name: Enable it on System Boot
+  service: name=httpd enabled=yes
+  become: yes
+  # notify:
+  #   - start apache
+
+- name: Start httpd(Apache)
+  command: service httpd start
+  retries: 3
+  delay: 3
+  register: result
+  until: result.rc == 0

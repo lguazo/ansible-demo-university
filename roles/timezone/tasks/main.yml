@@ -1,0 +1,4 @@
+- import_tasks: '{{ timezone_action }}.yml'
+  become: yes
+  tags:
+    - timezone

@@ -1,0 +1,11 @@
+---
+- name: Stop running processes
+  command: pm2 stop {{ item }}
+  register: stop_application
+  ignore_errors: yes
+  with_items: '{{ applications }}'
+
+- name: Delete each app
+  command: pm2 delete {{ item.item }}
+  when: item is not failed
+  with_items: '{{ stop_application.results }}'

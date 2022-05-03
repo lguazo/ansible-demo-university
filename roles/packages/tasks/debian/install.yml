@@ -1,0 +1,10 @@
+- name: Install required packages - Debian
+  apt:
+    name: '{{ default_required_packages + ["build-essential", "python2"] + custom_packages | default([]) }}'
+    state: present
+    update_cache: yes
+
+- name: Upgrade all packages - Debian
+  apt:
+    name: '*'
+    state: latest

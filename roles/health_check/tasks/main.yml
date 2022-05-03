@@ -1,0 +1,11 @@
+---
+- name: Check if applications are healthy
+  uri:
+    url: 'http://localhost:{{ item.port }}{{ item.path }}'
+    status_code: '{{ health_check_status_codes }}'
+  with_items: '{{ health_check_by_app }}'
+  when: health_check_by_app|length > 0
+  tags:
+    - health_check
+    - reload
+    - update

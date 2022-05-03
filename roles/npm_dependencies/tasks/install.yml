@@ -1,0 +1,4 @@
+- name: Install dependencies in "{{ npm_dependencies_base_path }}" directory
+  npm:
+    path: '{{ npm_dependencies_base_path | mandatory }}'
+    executable: ~/.nvm/versions/node/{{ node_version }}/bin/npm

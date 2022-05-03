@@ -1,0 +1,5 @@
+- name: Execute "{{ npm_dependencies_script_name }}" script
+  shell: 'bash {{ npm_dependencies_script_name }} {{ npm_dependencies_script_args | join(" ") }}'
+  args:
+    chdir: '{{ npm_dependencies_script_base_path }}/'
+    executable: /bin/bash

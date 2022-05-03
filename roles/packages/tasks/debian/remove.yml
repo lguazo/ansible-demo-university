@@ -1,0 +1,6 @@
+- name: Remove required packages - Debian
+  apt:
+    name: '{{ default_required_packages | difference(["python3"]) + custom_packages | default([]) }}'
+    autoclean: yes
+    autoremove: yes
+    state: absent

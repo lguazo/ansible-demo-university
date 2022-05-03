@@ -1,0 +1,3 @@
+- import_tasks: '{{ npm_dependencies_action }}.yml'
+  tags:
+    - dependencies

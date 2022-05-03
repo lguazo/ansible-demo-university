@@ -1,0 +1,9 @@
+---
+- name: Stop {{ project_name }} running processes
+  command: pm2 stop {{ project_name }}
+  register: stop_application
+  ignore_errors: yes
+
+- name: Delete {{ project_name }} app
+  command: pm2 delete {{ project_name }}
+  when: item is succeeded

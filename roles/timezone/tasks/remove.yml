@@ -1,0 +1,5 @@
+- import_tasks: redhat/remove.yml
+  when: ansible_facts["os_family"] | default(os_family) == "Redhat"
+
+- import_tasks: debian/remove.yml
+  when: ansible_facts["os_family"] | default(os_family) == "Debian"

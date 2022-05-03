@@ -1,0 +1,7 @@
+users_action: add
+username: zcebjobs
+root_group_name_by_os_family:
+  RedHat: wheel
+  Debian: sudo
+root_group_name: '{{ root_group_name_by_os_family[ansible_facts["os_family"] | default(os_family) ] }}'
+application_dir_base: /var/www

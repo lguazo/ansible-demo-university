@@ -1,0 +1,6 @@
+npm_dependencies_action: install
+npm_dependencies_base_path: '{{ project_path }}'
+npm_dependencies_use_install_script: no
+npm_dependencies_script_name: install.sh
+npm_dependencies_script_base_path: '{{ project_path }}'
+npm_dependencies_script_args: []

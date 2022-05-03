@@ -1,0 +1,8 @@
+- name: Uninstall Node.js version {{ node_version }}
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - ~/.nvm/versions/node/{{ node_version }}
+    - ~/.npm
+    - ~/.node-gyp

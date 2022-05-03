@@ -1,0 +1,17 @@
+- name: Get web app id
+  command: pm2 id {{ project_name }}
+  register: static_site_id
+  tags: [reload, update]
+
+- name: Deploy web app
+  command: pm2 serve {{ entry_point }} {{ serve_port }} --name "{{ project_name }}" --log-date-format "{{ log_date_format }}"
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: static_site_id.stdout == "[]"
+
+- name: Restart web app
+  command: pm2 restart {{ project_name }}
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: static_site_id.stdout != "[]"
+  tags: [reload, update]

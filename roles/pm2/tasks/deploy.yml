@@ -1,0 +1,8 @@
+---
+- name: Delete old logs
+  command: pm2 flush
+
+- import_tasks: '{{ pm2_type }}/deploy.yml'
+
+- name: Save instances
+  command: pm2 save

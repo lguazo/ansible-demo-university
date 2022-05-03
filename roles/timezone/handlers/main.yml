@@ -1,0 +1,16 @@
+- name: start ntpd
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+
+- name: restart ntpd
+  service:
+    name: ntpd
+    state: restarted
+  ignore_errors: yes
+
+- name: stop ntpd
+  service:
+    name: ntpd
+    state: stopped

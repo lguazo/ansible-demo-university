@@ -1,0 +1,14 @@
+- name: Remove "{{ username }}" user
+  user:
+    name: '{{ username }}'
+    state: absent
+    remove: yes
+    force: yes
+
+- name: Set "root" as ownership of "{{ application_dir_base }}" directory
+  file:
+    path: '{{ application_dir_base }}'
+    state: directory
+    recurse: yes
+    owner: root
+    group: root

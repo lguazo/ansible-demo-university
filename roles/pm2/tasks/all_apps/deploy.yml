@@ -1,0 +1,25 @@
+---
+- name: Get all running processes
+  command: pm2 l
+  changed_when: false
+  register: pm2_list
+  tags: [reload, update]
+
+- name: Deploy all applications
+  command: pm2 start {{ entry_point }} --env {{ node_env }}
+  register: pm2_launch_processes
+  no_log: '{{ not show_pm2_logs }}'
+  changed_when: '"not running, starting" in pm2_launch_processes.stdout'
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: '"online" not in pm2_list.stdout'
+
+- name: Reload all applications
+  command: pm2 reload {{ entry_point }} --env {{ node_env }} --update-env
+  register: pm2_restart_processes
+  no_log: '{{ not show_pm2_logs }}'
+  changed_when: '"Applying action reloadProcessId" in pm2_restart_processes.stdout'
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: '"online" in pm2_list.stdout'
+  tags: [reload, update]

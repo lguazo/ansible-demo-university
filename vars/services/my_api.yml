@@ -1,0 +1,20 @@
+server_group: servers
+node_version: v17.6.0
+node_env: production
+local_repo_name: /Users/luisguazo/Documents/University/IX/SistemasDistribuidos/Projects/NodeJS-API/NodeJS-API
+repo_name: NodeJS-API
+repo_path: /var/www/{{ repo_name }}
+project_path: '{{ repo_path }}/app'
+entry_point: '{{ repo_path }}/ecosystem.config.js'
+# npm_dependencies_use_install_script: yes
+npm_dependencies_action: install
+npm_dependencies_base_path: '{{ repo_path }}/app'
+# npm_dependencies_script_name: install-modules.sh
+# npm_dependencies_script_args:
+  # - NodeJS-API
+applications_to_launch:
+  - NodeJS-API
+health_check_by_app:
+  - name: NodeJS-API
+    port: 8080
+    path: /health

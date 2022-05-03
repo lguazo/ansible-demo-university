@@ -1,0 +1,4 @@
+---
+- import_tasks: '{{ pm2_action }}.yml'
+  tags:
+    - pm2

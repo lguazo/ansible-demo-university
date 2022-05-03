@@ -1,0 +1,24 @@
+---
+- name: Get ids of running apps
+  command: pm2 id {{ item }}
+  register: pm2_ids
+  changed_when: false
+  with_items: '{{ applications_to_launch }}'
+  tags: [reload, update]
+
+- name: Deploy each application
+  command: pm2 start {{ entry_point }} --only {{ item.item }} --env {{ node_env }}
+  no_log: '{{ not show_pm2_logs }}'
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: item.stdout == '[]'
+  with_items: '{{ pm2_ids.results }}'
+
+- name: Reload each application
+  command: pm2 reload {{ entry_point }} --only {{ item.item }} --env {{ node_env }} --update-env
+  no_log: '{{ not show_pm2_logs }}'
+  args:
+    chdir: '{{ project_path | mandatory }}'
+  when: item.stdout != '[]'
+  with_items: '{{ pm2_ids.results }}'
+  tags: [reload, update]

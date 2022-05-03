@@ -1,0 +1,4 @@
+- import_tasks: '{{ users_action }}.yml'
+  become: yes
+  tags:
+    - users

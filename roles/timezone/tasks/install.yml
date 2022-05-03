@@ -1,0 +1,10 @@
+- import_tasks: redhat/install.yml
+  when: ansible_facts["os_family"] | default(os_family) == "Redhat"
+
+- import_tasks: debian/install.yml
+  when: ansible_facts["os_family"] | default(os_family) == "Debian"
+
+- name: Set timezone to "{{ timezone_region }}"
+  timezone:
+    name: '{{ timezone_region }}'
+  notify: restart ntpd

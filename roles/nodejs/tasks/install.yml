@@ -1,0 +1,15 @@
+- name: Install Node.js version "{{ node_version }}"
+  command: bash -ic 'nvm install {{ node_version }}'
+  args:
+    creates: ~/.nvm/versions/node/{{ node_version }}/bin/node
+  register: new_node_version
+
+- name: Check current alias default Node.js version
+  command: bash -ic 'nvm alias default'
+  changed_when: false
+  register: alias_default_version
+
+- name: Set "{{ node_version }}" as alias default
+  command: bash -ic 'nvm alias default {{ node_version }}'
+  changed_when: node_version not in alias_default_version.stdout | default("")
+  when: node_version_set_as_default|bool

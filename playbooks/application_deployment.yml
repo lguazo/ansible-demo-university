@@ -1,0 +1,24 @@
+- name: Application deployment
+  hosts: '{{ server_group | mandatory }}'
+  tags:
+    - deploy
+  vars_files:
+    - ../vars/services/{{ app_name | mandatory }}.yml
+  vars:
+    username: zcebjobs
+  pre_tasks:
+    - name: Copy repo path to remote server
+      become: true 
+      copy:
+        src: '{{ local_repo_name }}'
+        dest: /var/www/
+        owner: '{{ username }}'
+        group: '{{ username }}' 
+  roles:
+    - { role: npm_dependencies }
+    - {
+        role: pm2,
+        pm2_action: deploy,
+        when: npm_dependencies_action != "install_and_deploy",
+      }
+    - { role: health_check }

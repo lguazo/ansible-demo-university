@@ -1,0 +1,41 @@
+- name: Server setup - common configurations
+  # hosts: servers
+  hosts: '{{ server_group | mandatory }}'
+  gather_facts: yes
+  tags:
+    - common
+    - setup
+  vars_files:
+    - ../vars/services/{{ app_name | mandatory }}.yml
+  vars:
+    optional_roles: []
+    username: zcebjobs
+    on_premise_servers: yes
+    os_family: '{{ ansible_facts["os_family"] | default("RedHat") }}'
+  # pre_tasks:
+  #   - name: Include environment.yml file
+  #     include_vars:
+  #       file: ../vars/environment.yml
+  #     when: node_env is not defined
+  #     tags:
+  #       - always
+
+    # - name: Include required var files by environment
+    #   include_vars:
+    #     file: ../vars/{{ node_env }}/{{ item }}
+    #   with_items:
+    #     - aws/iam.yml
+    #     - dbs/oracledb.yml
+    #     - common.yml
+    #   tags:
+    #     - always
+  roles:
+    - { role: users }
+    - { role: packages }
+    - { role: firewalld, when: on_premise_servers|bool }
+    # - { role: ssh }
+    - { role: timezone }
+    # - { role: httpd }
+    - { role: nvm }
+    - { role: nodejs }
+    - { role: pm2, pm2_action: install }

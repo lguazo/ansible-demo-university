@@ -1,0 +1,11 @@
+---
+- name: Download and install NVM
+  shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | PROFILE={{ nvm_profile }} bash
+  args:
+    creates: '{{ ansible_env["HOME"] | default("~") }}/.nvm/nvm.sh'
+    warn: no
+  register: nvm_installation
+
+- import_tasks: setup_debian.yml
+  when: ansible_facts["os_family"] | default(os_family) in ["Debian", "Darwin"]

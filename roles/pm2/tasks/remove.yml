@@ -1,0 +1,51 @@
+---
+- name: Remove PM2 service file
+  shell: env PATH=$PATH:/home/{{ ansible_user }}/.nvm/versions/node/{{ node_version }}/bin /home/{{ ansible_user }}/.nvm/versions/node/{{ node_version }}/lib/node_modules/pm2/bin/pm2 unstartup systemd -u {{ ansible_user }} --hp /home/{{ ansible_user }}
+  register: pm2_unstartup
+  changed_when: '"Init file disabled" in pm2_unstartup.stdout'
+  failed_when:
+    - pm2_unstartup.failed
+    - pm2_unstartup.stderr is defined and not "No such file or directory" in pm2_unstartup.stderr
+    - not "Unit file pm2-" + ansible_user + ".service does not exist" in pm2_unstartup.stdout
+    - not "Unit file pm2-" + ansible_user + ".service not loaded" in pm2_unstartup.stdout
+  become: yes
+  notify: systemd reload
+
+- name: Check if PM2 directory exists
+  stat:
+    path: ~/.pm2
+  register: pm2_dir
+
+- name: Stop all running processes
+  command: pm2 stop all
+  register: stopped_pm2_processes
+  changed_when:
+    - stopped_pm2_processes.stderr is defined
+      and not "No process found" in stopped_pm2_processes.stderr
+  failed_when:
+    - stopped_pm2_processes.failed
+    - stopped_pm2_processes.stderr is defined
+      and not "No process found" in stopped_pm2_processes.stderr
+  when: pm2_dir.stat.exists
+
+- name: Delete all apps
+  command: pm2 delete all
+  register: deleted_pm2_processes
+  changed_when:
+    - deleted_pm2_processes.stderr is defined
+      and not "No process found" in deleted_pm2_processes.stderr
+  failed_when:
+    - deleted_pm2_processes.failed
+    - deleted_pm2_processes.stderr is defined
+      and not "No process found" in deleted_pm2_processes.stderr
+  when: pm2_dir.stat.exists
+
+- name: Remove PM2 directory
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - /etc/systemd/system/pm2-{{ ansible_user }}.service
+    - ~/.pm2
+  become: yes
+  notify: systemd reload

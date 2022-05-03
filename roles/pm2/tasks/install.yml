@@ -1,0 +1,48 @@
+---
+- name: Install PM2
+  npm:
+    name: pm2
+    global: yes
+    executable: ~/.nvm/versions/node/{{ node_version }}/bin/npm
+  when: pm2_version is undefined
+
+- name: Install a Specific Version of PM2
+  npm:
+    name: pm2@{{ pm2_version }}
+    global: yes
+    executable: ~/.nvm/versions/node/{{ node_version }}/bin/npm
+  when: pm2_version is defined
+
+- name: Check if there is a PM2 service file
+  command: systemctl cat pm2-{{ ansible_user }}
+  register: pm2_service_file
+  changed_when: false
+  failed_when:
+    - pm2_service_file.failed
+    - not "No files found for pm2-" + ansible_user in pm2_service_file.stderr
+    - not  "Unit pm2-" + ansible_user + ".service is not loaded" in pm2_service_file.stderr
+
+- name: Get node version from current PM2 service file
+  set_fact:
+    previous_node_version: "{{ pm2_service_file.stdout_lines | select('match', '.*ExecStart.*') | first | regex_search('v[\\d.]+') }}"
+  when:
+    - pm2_service_file.stdout is defined
+    - pm2_service_file.stdout != ""
+
+- name: Remove old PM2 service file when upgrading to newer Node.js version
+  shell: env PATH=$PATH:/home/{{ ansible_user }}/.nvm/versions/node/{{ previous_node_version }}/bin /home/{{ ansible_user }}/.nvm/versions/node/{{ node_version }}/lib/node_modules/pm2/bin/pm2 unstartup systemd -u {{ ansible_user }} --hp /home/{{ ansible_user }}
+  register: pm2_unstartup
+  changed_when: '"Init file disabled" in pm2_unstartup.stdout'
+  become: yes
+  notify: systemd reload
+  when:
+    - pm2_service_file.stdout is defined
+    - pm2_service_file.stdout != ""
+    - previous_node_version != node_version
+
+- name: Setup PM2 to start at system startup
+  shell: env PATH=$PATH:/home/{{ ansible_user }}/.nvm/versions/node/{{ node_version }}/bin /home/{{ ansible_user }}/.nvm/versions/node/{{ node_version }}/lib/node_modules/pm2/bin/pm2 startup systemd -u {{ ansible_user }} --hp /home/{{ ansible_user }}
+  args:
+    creates: /etc/systemd/system/pm2-{{ ansible_user }}.service
+  become: yes
+  notify: systemd reload

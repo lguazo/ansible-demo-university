@@ -1,0 +1,4 @@
+---
+nvm_action: install
+nvm_version: v0.35.3
+nvm_profile: .bashrc
